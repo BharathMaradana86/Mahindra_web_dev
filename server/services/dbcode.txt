@@ -1,0 +1,33 @@
+ALTER TABLE monthlyreport
+ADD CONSTRAINT unique_mon_year_line UNIQUE (mon_year, line);
+
+
+INSERT INTO monthlyreport (mon_year, line, helmet_count, vest_count, shoes_count, goggles_count, gloves_count)
+SELECT
+    d.mon_year,
+    d.zone,
+    d.helmet_count,
+    d.vest_count,
+    d.shoes_count,
+    d.goggles_count,
+    d.gloves_count
+FROM (
+    SELECT
+        CONCAT(SUBSTRING(date, 4, 2), '-', SUBSTRING(date, 7, 4)) AS mon_year,
+        zone,
+        SUM(json_extract(json_data, '$.helmet') = false) AS helmet_count,
+        SUM(json_extract(json_data, '$.vest') = false) AS vest_count,
+        SUM(json_extract(json_data, '$.shoes') = false) AS shoes_count,
+        SUM(json_extract(json_data, '$.gloves') = false) AS gloves_count,
+        SUM(json_extract(json_data, '$.goggles') = false) AS goggles_count
+    FROM dummy_table
+    WHERE date = '16-06-2023'
+    GROUP BY mon_year, zone
+) AS d
+LEFT JOIN monthlyreport AS m ON m.mon_year = d.mon_year AND m.line = d.zone
+ON DUPLICATE KEY UPDATE
+    helmet_count = m.helmet_count + d.helmet_count,
+    vest_count = m.vest_count + d.vest_count,
+    shoes_count = m.shoes_count + d.shoes_count,
+    goggles_count = m.goggles_count + d.goggles_count,
+    gloves_count = m.gloves_count + d.gloves_count;

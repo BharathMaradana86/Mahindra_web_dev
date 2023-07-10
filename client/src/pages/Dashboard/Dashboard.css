@@ -1,0 +1,82 @@
+.datepicker {
+
+  border: 10px;
+  border-color: white !important;
+  border-radius: 6px;
+  padding: 2px;
+  box-shadow: 0 10px 10px rgba(0,0,0,0.3) !important;
+  margin-top: 1px;
+
+} 
+
+.yearpicker{
+  border: 10px;
+  border-color: white !important;
+  border-radius: 6px;
+  padding: 2px;
+  box-shadow: 0 10px 10px rgba(0,0,0,0.3) !important;
+  width: 105px;
+}
+
+.yearpicker::placeholder{
+  color: black;
+}
+
+.container{
+display: inline-flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+float: right;
+gap: 10px;
+margin-top: 5px;
+margin-right: 2px;
+}
+
+.paper{
+height: 400px;
+}
+
+.text{
+padding-left: 25px;
+}
+
+@media screen and (max-width: 615px) {
+.container {
+  flex-direction: column;
+  float: right;
+  margin-left: 50px;
+  margin-right: 25px;
+}
+.paper{
+  height: 550px !important;
+}
+}
+
+@media screen and (min-width: 900px) and (max-width:1150px) {
+
+.paper{
+  height: 550px !important;
+}
+}
+
+@media screen and (max-width:515px){
+.container {
+  flex-direction: column;
+  float: none;
+  margin-left: 60px;
+
+}
+.text{
+  padding-left: 50px;
+}
+}
+
+@media screen and (min-width:380px) and (max-width:515px) {
+.container{
+  margin-left: 110px;
+}
+.text{
+  padding-left: 80px;
+}
+}
