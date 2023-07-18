@@ -10,6 +10,7 @@ import Features from './pages/Features/Features';
 import LiveMonitoring from './pages/Live-Monitoring/LiveMonitoring';
 import Reports from './pages/Reports/Reports';
 import VMS from './pages/VMS/VMS';
+import RTSPStream from './pages/RTSPStream';
 
 function App() {
   
@@ -29,6 +30,7 @@ function App() {
         <Route path="/reports" element={<Reports onTitleChange= {handleTitleChange} />}  />
         <Route path="/features" element={<Features  onTitleChange= {handleTitleChange}/>}  />
         <Route path="/vms-settings" element={<VMS  onTitleChange= {handleTitleChange}/>}  />
+        <Route path='/rtsp' element={<RTSPStream/>}/>
         </Route>
           <Route path='/Login' element={<Login/>} />
           <Route path='/Register' element={<Register/>} />
