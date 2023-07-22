@@ -1,0 +1,161 @@
+.containerf{
+    display: flex ;
+    flex-direction: column ;
+    align-items: flex-start ;
+  }
+  
+.inputf{
+    width: 30%;
+    height: 35px ;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+.format{
+    display: flex;
+    flex-direction: row;
+}
+.option{
+    font-size: 16px;
+}
+
+
+.file{
+    display: flex;
+    flex-direction: row;
+    margin-right: 20px;
+}
+
+
+
+.element{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.element1{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.from{
+    display: flex;
+    flex-direction: row;
+}
+
+.to{
+    display: flex;
+    flex-direction: row;
+    
+}
+
+.inn{
+    margin-top: 20px;
+}
+
+.cal{
+    border-radius: 5px;
+    padding: 5px;
+    padding-left: 17px;
+    padding-right: 17px;
+    letter-spacing: 0.5px;
+}
+
+.btn{
+    
+    width: 151px;
+    height:32px;
+    font-size: 18px;
+    border-radius: 5px;
+    background: var(--color-4, #003470);
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.25);
+    color: white;
+    cursor: pointer;
+}
+
+.element2{
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    gap:10px;    
+}
+
+
+
+@media screen and (max-width:576px) {
+    .inputf{
+        width: 100%;
+    }
+    .element{
+        display: flex;
+        flex-direction: column;
+    }
+    .label1{
+        width: 30%;
+    }
+    .label2{
+        width: 20% !important;
+    }
+
+    
+}
+
+@media screen and (min-width:576px) {
+    .label{
+        width: 150px;
+    }
+    .inputf{
+        margin-top: 15px;
+    }
+    .label1{
+        width: 150px;
+    }
+    .label2{
+        margin-right:30px;
+    }
+    .from{
+        width:280px;
+    }
+    .element2{
+        margin-left: 10%;
+    }
+
+    
+    
+}
+
+  @media screen and (max-width:330px) {
+    .inputf{
+        width:80%
+    }
+    .element2{
+
+        margin-left: 0% !important;
+    }
+    .from,
+    .to{
+        display: flex;
+        flex-direction: column;
+
+    }
+    .inn{
+        margin-top: 0px;
+    }
+    .element1,
+    .format{
+        display: flex;
+        flex-direction: column;
+        margin-top: 0px;
+    }
+  }
+  
+ 
+  @media screen and (max-width:400px) {
+    .element2{
+        display: flex;
+        flex-direction: column;
+        margin-left: 20%;
+    }
+  }

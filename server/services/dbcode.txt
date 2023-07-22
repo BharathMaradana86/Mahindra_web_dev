@@ -31,3 +31,98 @@ ON DUPLICATE KEY UPDATE
     shoes_count = m.shoes_count + d.shoes_count,
     goggles_count = m.goggles_count + d.goggles_count,
     gloves_count = m.gloves_count + d.gloves_count;
+
+
+
+SELECT
+    CONCAT(MONTH(month_year), '-', YEAR(month_year)) AS month_year,
+    SUM(helmet_count) AS total_helmet_count,
+    SUM(vest_count) AS total_vest_count,
+    SUM(goggles_count) AS total_goggles_count,
+    SUM(gloves_count) AS total_gloves_count,
+    SUM(shoes_count) AS total_shoes_count
+FROM
+    monthlyreport
+WHERE
+    (YEAR(month_year) = 05 AND MONTH(month_year) >= 2023)
+    OR (YEAR(month_year) = 2023 AND MONTH(month_year) <= 09)
+    OR (YEAR(month_year) > 2020 AND YEAR(month_year) < 2023)
+GROUP BY
+    MONTH(month_year), YEAR(month_year)
+ORDER BY
+    YEAR(month_year), MONTH(month_year);
+
+
+SELECT
+    month_year,
+    SUM(helmet_count) AS total_helmet_count,
+    SUM(vest_count) AS total_vest_count,
+    SUM(goggles_count) AS total_goggles_count,
+    SUM(gloves_count) AS total_gloves_count,
+    SUM(shoes_count) AS total_shoes_count
+FROM (
+    SELECT
+        CONCAT(MONTHNAME(month_year), '-', YEAR(month_year)) AS month_year,
+        helmet_count,
+        vest_count,
+        goggles_count,
+        gloves_count,
+        shoes_count
+    FROM
+        monthlyreport
+    WHERE
+       (YEAR(month_year) = 2020 AND MONTH(month_year) >= 05)
+    OR (YEAR(month_year) = 2023 AND MONTH(month_year) <= 09)
+    OR (YEAR(month_year) >= 2020 AND YEAR(month_year) <= 2023)
+) AS subquery
+GROUP BY
+    month_year
+ORDER BY
+    STR_TO_DATE(month_year, '%Y-%M');
+
+SELECT
+    CONCAT(month_year, '-', year) AS month_year,
+    SUM(helmet_count) AS total_helmet_count,
+    SUM(vest_count) AS total_vest_count,
+    SUM(goggles_count) AS total_goggles_count,
+    SUM(gloves_count) AS total_gloves_count,
+    SUM(shoes_count) AS total_shoes_count
+FROM (
+    SELECT
+        CONCAT(SUBSTRING_INDEX(month_year, '-', -1), '-', SUBSTRING_INDEX(month_year, '-', 1)) AS month_year,
+        helmet_count,
+        vest_count,
+        goggles_count,
+        gloves_count,
+        shoes_count
+    FROM
+        monthlyreport
+    WHERE
+        (SUBSTRING_INDEX(month_year, '-', -1) = 2020 AND SUBSTRING_INDEX(month_year, '-', 1) >= 05)
+        OR (SUBSTRING_INDEX(month_year, '-', -1) = 2023 AND SUBSTRING_INDEX(month_year, '-', 1) <= 09)
+        OR (SUBSTRING_INDEX(month_year, '-', -1) > 2020 AND SUBSTRING_INDEX(month_year, '-', -1) < 2023)
+) AS subquery
+GROUP BY
+    month_year
+ORDER BY
+    STR_TO_DATE(CONCAT(month_year, '-', 2020), '%Y-%M');
+
+
+
+SELECT
+    month_year,
+    SUM(helmet_count) AS total_helmet_count,
+    SUM(vest_count) AS total_vest_count,
+    SUM(goggles_count) AS total_goggles_count,
+    SUM(gloves_count) AS total_gloves_count,
+    SUM(shoes_count) AS total_shoes_count
+FROM
+    monthlyreport
+WHERE
+    (SUBSTRING_INDEX(month_year, '-', 1) = 2020 AND SUBSTRING_INDEX(month_year, '-', -1) >= 05)
+    OR (SUBSTRING_INDEX(month_year, '-', 1) = 2023 AND SUBSTRING_INDEX(month_year, '-', -1) <= 09)
+    OR (SUBSTRING_INDEX(month_year, '-', 1) > 2020 AND SUBSTRING_INDEX(month_year, '-', 1) < 2023)
+GROUP BY
+    month_year
+ORDER BY
+    STR_TO_DATE(month_year, '%Y-%m');

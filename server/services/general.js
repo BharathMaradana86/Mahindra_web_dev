@@ -1,5 +1,6 @@
 const express = require('express');
 const {db_1} = require('../db/connection/sql-connection');
+const mysql = require('../db/connection/mysql-connection')
 const bcrypt = require('bcrypt')
 const { hashSync, genSaltSync , compareSync, genSalt } = bcrypt
 const jwt = require('jsonwebtoken');
@@ -7,10 +8,9 @@ const { resolve } = require('path');
 const { rejects } = require('assert');
 
 
-const register = async (First_name,Last_name,Email,Password,confirm_password) => {
+const register = async (First_name,Last_name,Email,Password,Confirm_password) => {
                   return new Promise((resolve,rejects) => {
-                      let query = `INSERT INTO users(First_name,Last_name,Email,Password,Confirm_password,type) values(?,?,?,?,?,?)`;
-                      db_1.all(query,[First_name,Last_name,Email,Password,confirm_password,"Admin"],(err,result) => {
+                     mysql.query(`INSERT INTO users(First_name,Last_name,Email,Password,Confirm_password,type) values('${First_name}','${Last_name}','${Email}','${Password}','${Confirm_password}',"admin");`,(err,result) => {
                         if(err){
                             console.log(err);
                             return rejects(err);
@@ -25,23 +25,21 @@ const check_user = (Email) => {
     
                return new Promise((resolve,rejects) => {
                 
-                          let query = `select * from users where Email = ? limit 1`
-                         
-                          db_1.all(query,[Email],(err,result) => {
-                                    if(err) {
-                                      console.log(err)
-                                        return rejects(err);
-                                    }
-                                  //  console.log(result)
-                                    return resolve(result);
-                          })
+                        
+                        mysql.query(`select * from users where Email = '${Email}' limit 1`,(err,result) => {
+                          if(err){
+                            console.log(err)
+                            return rejects(err);
+                          }
+                          return resolve(result);
+                        })
                })
 }
 
 const updatedPassword = (email,newPassword) => {
   return new Promise((resolve,rejects) => {
-    let query = `update users set Password = ? , Confirm_Password =? where Email = ?;`;
-    db_1.all(query,[newPassword,newPassword,email],(err,result) => {
+    // let query = `update users set Password = ? , Confirm_Password =? where Email = ?;`;
+    mysql.query(`update users set Password = ${newPassword} , Confirm_Password =${newPassword} where Email = '${email}';`,(err,result) => {
       if(err) {
             console.log(err)
              return rejects(err);
@@ -98,9 +96,9 @@ exports.register_user = async(req,res) => {
 exports.login_user = async (req,res) => {
   try {
               const { Email, Password} = req.body;
-
-              const check_email = await check_user(Email);
               
+              const check_email = await check_user(Email);
+            
               if(!check_email.length){
                 return res.status(200).json("Email Doesn't Exists please register")
               }

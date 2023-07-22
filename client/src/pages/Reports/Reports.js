@@ -1,24 +1,18 @@
-import { FormControlLabel, Grid, Typography, RadioGroup, Radio } from '@mui/material';
-import React from 'react'
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { useTheme } from '@mui/material/styles';
+import './Reports.css'
+import React, { useEffect, useState } from 'react'
+
+import Form from 'react-bootstrap/Form';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { saveAs } from 'file-saver';
+import Papa from 'papaparse';
+import axios from 'axios';  
+import DenseTable from './DenseTable';
 
 
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
 
 const names = [
   'Shop-1',
@@ -33,25 +27,21 @@ const names = [
   'Shop-10',
 ];
 
-function getStyles(name, personName, theme) {
-  return {
-    fontWeight:
-      personName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
+
+
 
 
 const Reports = ( { onTitleChange }) => {
 
-  const theme = useTheme();
+  
+  const [reportdata,setreportdata] = useState([])
   const [shopName, setShopName] = React.useState("");
 
   const handleChangeShopName = (event) => {
     setShopName(
       event.target.value
     );
+    console.log(shopName);
   };
 
   const [lineName, setLineName] = React.useState("");
@@ -70,7 +60,7 @@ const Reports = ( { onTitleChange }) => {
     );
   };
 
-  const [detectionType, setDetectionType] = React.useState([]);
+  const [detectionType, setDetectionType] = React.useState("");
 
   const handleChangeDetectionType = (event) => {
     setDetectionType(
@@ -78,7 +68,7 @@ const Reports = ( { onTitleChange }) => {
     );
   };
 
-  const [timePeriod, setTimePeriod] = React.useState([]);
+  const [timePeriod, setTimePeriod] = React.useState("");
 
   const handleChangeTimePeriod = (event) => {
     setTimePeriod(
@@ -86,186 +76,172 @@ const Reports = ( { onTitleChange }) => {
     );
   };
 
-  const [isSmallScreen, setIsSmallScreen] = React.useState(false);
+
+  const [fromDate, setFromDate] = React.useState('');
+      const [toDate, setToDate] = React.useState('');
+      
+
+const handleFromDateChange = (event) =>{
+  setFromDate(event.target.value)
+}
+
+const handleToDateChange = (event) =>{
+  setToDate(event.target.value)
+}
+
+const handleReset = () =>{
+
+    setShopName('')
+    setStageName('')
+    setLineName('')
+    setDetectionType('')
+    setTimePeriod('')
+    setFromDate('')
+    setToDate('')
+    setSelectedFormat('')
+    
+}
 
 
-  React.useEffect(() => {
-    const handleResize = () => {
-      setIsSmallScreen(window.innerWidth < 537);
-    };
+const [selectedFormat, setSelectedFormat] = React.useState('');
 
-    handleResize();
+  const handleFormatChange = (event) => {
+    setSelectedFormat(event.target.value);
+  };
 
-    window.addEventListener('resize', handleResize);
+  const handleGenerate = async () => {
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+        if(1)
+        { 
+          let csvData = [] 
+          let tableData = []
+          await axios.post('http://localhost:8083/api/reports/generated',{
+               shopename:shopName,
+               stageName:stageName,
+               lineName:lineName,
+               detectionType:detectionType,
+                fromDate: fromDate,
+                toDate:toDate
+     }).then((res) => {{
+                 console.log(res.data)
+                 setreportdata(res.data)
+                 csvData = res.data
+                 tableData = res.data
+     }})
+        if (selectedFormat === 'csv') {
+          // Generate CSV file
+           
+    
+          const csvString = Papa.unparse(csvData);
+          const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8' });
+          saveAs(blob, 'data.csv');
+          
+        } else if (selectedFormat === 'pdf') {
+          const doc = new jsPDF();
+          let count=0;
+          const sum = tableData.reduce((accumulator, currentValue) => parseInt(accumulator) + parseInt(currentValue.object_type), 0);
+          tableData.map((item,index) => {item.object_value == 'temp' ? count+=1 : count=count})
+          
+          doc.autoTable({ head: [['date','zone','timestamp','object_type','object_value']], body: tableData.map((item,index) => ([item.date,item.zone,item.timestamp,item.object_type,item.object_value,item.total_incidents] )) });
+          doc.autoTable({head:[['total_incident','total_count']],body: [["temp",count]]})
+          doc.save('data.pdf');
+        }
+      }
+      else{
+        alert('Please enter all the fields')
+      }
+  };
 
-  
 
   return (
-    <div style={{marginLeft:3}}>
+    <div className='containerf'>
       {onTitleChange('Reports')}
-      <Grid container spacing={3}  >
-        <Grid item sx={{mt:2}}>
-        <Typography variant='h6'>Shop Name :</Typography>
-        </Grid>
-        <Grid item sx={{ ml:isSmallScreen ? 0 : 4}} >
-        <FormControl sx={{ m:!isSmallScreen ? 1 : 0, width: 250  }}>
-        <InputLabel id="demo-simple-name-label" >Name</InputLabel>
-        <Select
-          labelId="demo-simple-name-label"
-          id="demo-simple-name"
-          value={shopName}
-          onChange={handleChangeShopName}
-          input={<OutlinedInput label="Name" />}
-          MenuProps={MenuProps}
-          style={{height:35}}
-        >
-          {names.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, shopName, theme)}
-            >
-              {name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-        </Grid>
-      </Grid>
-      <Grid container spacing={3} >
-        <Grid item sx={{mt:2}}>
-        <Typography variant='h6'>Line Name :</Typography>
-        </Grid>
-        <Grid item sx={{ml:4.5}} >
-          <FormControl sx={{ m: 1, width: 250  }}>
-        <InputLabel id="demo-simple-name-label">Name</InputLabel>
-        <Select
-          labelId="demo-simple-name-label"
-          id="demo-simple-name"
-          value={lineName}
-          onChange={handleChangeLineName}
-          input={<OutlinedInput label="Name" />}
-          MenuProps={MenuProps}
-        >
-          {names.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, lineName, theme)}
-            >
-              {name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-        </Grid>
-      </Grid>
-      <Grid container spacing={3} >
-        <Grid item sx={{mt:2,}}>
-        <Typography variant='h6'>Stage Name :</Typography>
-        </Grid>
-        <Grid item  sx={{ml:3.5}}>
-          <FormControl sx={{ m: 1, width: 250  }}>
-        <InputLabel id="demo-simple-name-label">Name</InputLabel>
-        <Select
-          labelId="demo-simple-name-label"
-          id="demo-simple-name"
-          value={stageName}
-          onChange={handleChangeStageName}
-          input={<OutlinedInput label="Name" />}
-          MenuProps={MenuProps}
-        >
-          {names.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, stageName, theme)}
-            >
-              {name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-        </Grid>
-      </Grid>
-      <Grid container spacing={3}  >
-        <Grid item sx={{mt:2}}>
-        <Typography variant='h6'>Detection type :</Typography>
-        </Grid>
-        <Grid item  sx={{ml:1}} >
-          <FormControl sx={{ m: 1, width: 250  }}>
-        <InputLabel id="demo-simple-name-label">Type</InputLabel>
-        <Select
-          labelId="demo-simple-name-label"
-          id="demo-simple-name"
-          value={detectionType}
-          onChange={handleChangeDetectionType}
-          input={<OutlinedInput label="Name" />}
-          MenuProps={MenuProps}
-        >
-          {names.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, detectionType, theme)}
-            >
-              {name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-        </Grid>
-      </Grid>
-      <Grid container spacing={3} >
-        <Grid item sx={{mt:2}}>
-        <Typography variant='h6'>Time Period :</Typography>
-        </Grid>
-        <Grid item  sx={{ml:3.5}}>
-          <FormControl sx={{ m: 1, width: 250  }}>
-        <InputLabel id="demo-simple-name-label">Period</InputLabel>
-        <Select
-          labelId="demo-simple-name-label"
-          id="demo-simple-name"
-          value={timePeriod}
-          onChange={handleChangeTimePeriod}
-          input={<OutlinedInput label="Name" />}
-          MenuProps={MenuProps}
-        >
-          {names.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, timePeriod, theme)}
-            >
-              {name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-        </Grid>
-      </Grid>
-      <Grid container spacing={3}  >
-        <Grid item sx={{mt:2}}>
-        <Typography variant='h6'>Format :</Typography>
-        </Grid>
-        <Grid item  sx={{mt:1.5,ml:9.5}} >
-        <FormControl>
-      <RadioGroup
-        row
-        aria-labelledby="demo-row-radio-buttons-group-label"
-        name="row-radio-buttons-group"
-      >
-        <FormControlLabel value="excel" control={<Radio />} label="Excel" />
-        <FormControlLabel value="pdf" control={<Radio />} label="PDF" />
-      </RadioGroup>
-    </FormControl>
-        </Grid>
-      </Grid>
+      <div className='element'>
+        <div className='label'>
+      <label htmlFor="shopName" ><h3>Shop Name:</h3></label>
+      </div>
+      <input id='shopname' className='inputf' type='text' value='D1 Shop' readOnly />
+      </div>
+       
+       <div className='element'>
+        <div className='label'>
+      <label htmlFor="lineName" ><h3>Line Name:</h3></label>
+      </div>
+      <Form.Select id="lineName" className='inputf' aria-label="Default select example" value={lineName} onChange={handleChangeLineName} >
+        <option>Select</option>
+        {names.map((name) => <option key={name} className='option'>{name}</option>)}
+      </Form.Select>
+      </div>
+
+      <div className='element'>
+        <div className='label'>
+      <label htmlFor="stageName" ><h3>Stage Name:</h3></label>
+      </div>
+      <Form.Select id="stageName" className='inputf' aria-label="Default select example" value={stageName} onChange={handleChangeStageName}>
+        <option>Select</option>
+        {names.map((name) => <option key={name}  className='option'>{name}</option>)}
+      </Form.Select>
+      </div>
+
+      <div className='element'>
+        <div className='label'>
+      <label htmlFor="detectionType" ><h3>Detection Type:</h3></label>
+      </div>
+      <Form.Select id="detectionType" className='inputf' aria-label="Default select example" value={detectionType} onChange={handleChangeDetectionType}>
+        <option>Select</option>
+        {names.map((name) => <option key={name}  className='option'>{name}</option>)}
+      </Form.Select>
+      </div>
+
+     
+
+      <div className='element1'>
+        <div className='label1'>
+            <h3>Format:</h3>
+        </div>
+        <div className='format' >
+          <div className='file'>
+            <input type="radio" name="format" value="csv" style={{width:'15px'}} checked={selectedFormat === 'csv'}
+          onChange={handleFormatChange}/>
+            <h3>Excel</h3>
+            </div>
+            <div className='file'>
+            <input type="radio" name="format" value="pdf" style={{width:'15px'}} checked={selectedFormat === 'pdf'}
+          onChange={handleFormatChange}/>
+             <h3>PDF</h3>
+             </div>
+        </div>
+      </div>
+
+
+      <div className='element'>
+        <div className='from'>
+        <div className='label2'>
+            <h3>From:</h3>
+        </div>
+        <div className='inn'  >
+    <input type="date" id="time" name="time" value={fromDate} onChange={handleFromDateChange} className='cal'/>
+        </div>
+        </div>
+        <div className='to'>
+        <div className='label2'>
+            <h3>To:</h3>
+        </div>
+        <div  className='inn'>
+        <input type="date" id="time1" name="time1" value={toDate} onChange={handleToDateChange} className='cal'/>
+        </div>
+        </div>
+      </div>
+
+      <div className='element2'>
+        <div className='gen'>
+        <button className='btn' onClick={handleGenerate}>Generate</button>
+        </div>
+        <div className='res'>
+        <button className='btn' onClick={handleReset}>Reset</button>
+        </div>
+      </div>
+        { reportdata ? <DenseTable data={reportdata}/> : null}
     </div>
   )
 }

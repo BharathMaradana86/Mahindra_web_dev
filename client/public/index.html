@@ -13,182 +13,35 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>React App</title>
     <style>
-      /* .camera {
-  background-color: aqua;
-  width: 400px;
-  height: 400px;
-} */
-.camera-wrapper {
+      .camera-wrapper {
         position: relative;
         display: flex;
+        justify-content: flex-end;
         align-items: center;
-        justify-content: center;
-        width: 400px;
-        height: 400px;
-        background-color: aqua;
+        height: 100vh;
       }
 
       .camera {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 50%;
+        right: 50%;
+        transform: translate(50%, -50%);
+        width: auto;
+        height: 85%;
         background-color: transparent;
       }
     </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+
     <div id="root"></div>
-    <div id="cctv" style="position: fixed; display: none;width: 100%;height: 100%;background-color: aqua;">
-      <button onclick="shoot1(),cctv_call()">Go back to dashboard</button>
-      <p id="asdf">yasawnth</p>
-        <!-- <input id="cctv_inputvalue" type="text" /> -->
-        <select id="cctv_inputvalue" onchange="set_value(),window.location.reload()">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-        </select>
-       
-      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    
-      <h1>Streaming Video</h1>
-      <div class="camera-wrapper">
-      <canvas class="camera" id="videoCanvas" style="background-color: aqua;" width="1640" height="480"></canvas>
-      <canvas class="camera" id="VideoCanvas"  width="1640" height="480"></canvas>
+
+      </script>
     </div>
-      <!-- <script src="jsmpeg.min.js"></script> -->
-        <script>
-          // Fetch the stream URL
-          
-         
-         try {
-          if(sessionStorage.cameraid){
-            window.document.getElementById("cctv_inputvalue").value = sessionStorage.cameraid
-          }
-          function set_value(){
-          sessionStorage.cameraid = window.document.getElementById("cctv_inputvalue").value;
-          cctv_call();
 
-        }
-         
-          window.onload = set_value();
-          function  cctv_call(){
-            
-          if(sessionStorage.getItem("root")=="none"){
-                          root.style.display = "none";
-                          cctv.style.display = "block";
-            }
-            const i=window.document.getElementById("cctv_inputvalue").value;
-           
-            axios.get('http://localhost:8083/stream/'+i)
-              .then(response => {
-                const streamUrl = response.data.streamUrl;
-                videoPlayer.src = streamUrl;
-                const canvas = document.getElementById('videoCanvas');
-               const ctx = canvas.getContext('2d');
-
-                 
-              })
-              .catch(error => {
-                console.error('Error fetching video stream:', error);
-              });
-          }
-          const canvas = document.getElementById('videoCanvas');
-        const url = 'ws://localhost:9999';
-        // const player = new JSMpeg.Player(url, { canvas });
-        const player = "t"
-        // Handle WebSocket connection errors
-        player.onError = (error) => {
-          console.error('WebSocket error:', error);
-        };
-        // Handle WebSocket connection close
-   
-        player.onSourceEnd = () => {
-          console.log('WebSocket connection closed');
-        };
-        function shoot1(){
-      
-      root.style.display="block";
-      cctv.style.display="none";
-      sessionStorage.root='block';
-      sessionStorage.cctv = "none"; 
-     
-    }
- sessionStorage.cameraid = i
-       
-       
-        } catch (error) {
-          console.log(error);
-        }
-        window.onload = function(){
-          const canvas = document.getElementById("VideoCanvas")
-               const ctx = canvas.getContext('2d');
-                 
-                  function drawBoundingBoxes(boundingBoxes) {
-                            if (!canvas || !ctx) {
-                              console.log(canvas,ctx)
-                               console.error('Canvas or context is null or undefined');
-                               return;
-                                }
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'red';
-        console.log(ctx)
-        console.log(boundingBoxes)
-        for (const box of boundingBoxes) {
-          const { x, y, width, height } = box;
-             console.log(x,y,width*840,height*420);
-          ctx.beginPath();
-          ctx.rect(x, y, width*840, height*420);
-          ctx.stroke();
-        }
-      }
-    
-      // Example bounding boxes
-     
-
-     
-      setInterval(() => {
-        console.log("something")
-        axios.get("http://localhost:8083/boundingbox").then((res) => {
-          
-        let  boundingBoxes = res.data;
-
-        console.log(boundingBoxes)
-          drawBoundingBoxes(boundingBoxes);
-        })
-  
-      }, 1000); // Adjust the interval as needed
-        }
-
-        </script>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-router-dom/umd/react-router-dom.min.js"></script>
   </body>
- 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

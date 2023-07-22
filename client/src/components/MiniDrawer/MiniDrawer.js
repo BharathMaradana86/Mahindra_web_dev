@@ -1,3 +1,4 @@
+ 
 import * as React from 'react';
 import { useEffect } from 'react';
 import axios from 'axios';
@@ -112,7 +113,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     ...(!open && {
       ...closedMixin(theme),
       '& .MuiDrawer-paper':{
-         ...closedMixin(theme),
+        ...closedMixin(theme),
         background: 'linear-gradient(180deg, #468DFE 0%, #0A218B 100%)',
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
       },
@@ -123,7 +124,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function MiniDrawer({children,title}) {
   const [userdata,setuserdata] = React.useState([])
   const navigate = useNavigate();
- 
+
   
   useEffect(()=>{
           
@@ -134,7 +135,7 @@ export default function MiniDrawer({children,title}) {
     }).then( res=> {
         
         setuserdata(res.data);
-       
+      
     }).catch((err)=>console.log(err))
       if(localStorage.token=='no token present' || localStorage.token=='Invalid Creadentials' || localStorage.token=='null'||localStorage.token==null)
     {
@@ -168,10 +169,10 @@ const theme1 = createTheme({
   palette:{
     mode : mode ? 'light' : 'dark',
     background: {
-     default: mode && '#f5f6fa'  ,
-     paper: mode ? '#ffffff' : '#0E1C5E', 
-     
-   },
+    default: mode && '#f5f6fa'  ,
+    paper: mode ? '#ffffff' : '#0E1C5E', 
+    
+  },
   }
 })
 
@@ -193,12 +194,12 @@ const handleToggle = () => {
 
 const logout = () => {
     // localStorage.token =null;  
-     navigate("/login");
-     
+    navigate("/login");
+    
 }
 
 const handleClose = (event) => {
- 
+
   if (anchorRef.current && anchorRef.current.contains(event.target)) {
     return;
   }
@@ -235,11 +236,23 @@ const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
- 
+
+  const shoot = () => {
+          //  let root = window.document.getElementById("root");
+          // console.log("nothing")
+          // let cctv = window.document.getElementById("cctv");
+          // cctv.style.display = "none";
+  }
+  const shoot1 = () => {
+    // let cctv = window.document.getElementById("cctv");
+    // cctv.style.display = "inline-block";
+    // console.log("cctv")
+  
+  }
   return (
     <>
 
-   {(localStorage.token !== 'null') ? <ModeContext.Provider value={{mode}}>
+  {(localStorage.token !== 'null') ? <ModeContext.Provider value={{mode}}>
     <ThemeProvider theme={theme1}>
     <Box sx={{ display: 'flex', background: mode ? '#f5f6fa' : 'linear-gradient(180deg, #2C69D1 0%, #468DFE 100%)' , height:'100vh',  overflowY:'auto',overflowX:'hidden' }}>
       <CssBaseline />
@@ -327,7 +340,7 @@ const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
           </Stack>
           </> :
           <div style={{marginLeft:'auto'}}>
-             <IconButton
+            <IconButton
           ref={anchorRef}
           id="composition-button"
           aria-controls={openProfile ? 'composition-menu' : undefined}
@@ -410,7 +423,7 @@ const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
       <Drawer
         variant="permanent"
         open={open}
-       
+      
       >
         <DrawerHeader >
         <IconButton
@@ -425,156 +438,159 @@ const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
             <MenuIcon  sx={{color:'white'}} />
           </IconButton>
           <IconButton onClick={handleDrawerClose} sx={{ display: !open && 'none' }}>
-            <ChevronLeftIcon  sx={{color:'white'}} />
-          </IconButton> 
-        </DrawerHeader>
-        <Divider />
-        <List  onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave} >
-            <ListItem disablePadding className='sidebarelement'>
-              <ListItemButton component={Link} to={"/"}
-                sx={{
-                  minHeight: 48,
-                  justifyContent:  open ? 'initial' : 'center',           
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
+              <ChevronLeftIcon  sx={{color:'white'}} />
+            </IconButton> 
+          </DrawerHeader>
+          <Divider />
+          <List  onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave} >
+              <ListItem disablePadding className='sidebarelement' >
+                <ListItemButton component={Link} to={"/"}
                   sx={{
-                    minWidth: 0,
-                    mr:  open ? 3 : 'auto',
-                    justifyContent: 'center',
+                    minHeight: 48,
+                    justifyContent:  open ? 'initial' : 'center',           
+                    px: 2.5,
+                  }}
+                  onClick={() => shoot()}
+                
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr:  open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                    onClick={() => { shoot() }}
+                  >
+                  < DashboardIcon sx={{color:'white'}} />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard" sx={{ opacity: open ? 1 : 0 ,color:'white'}} onClick={() => shoot()}/>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding className='sidebarelement'onClick={() => shoot1()} >
+                <ListItemButton component={Link} to={"/live-monitoring"} 
+                  sx={{
+                    minHeight: 48,
+                    justifyContent:  open ? 'initial' : 'center',
+                    px: 2.5,
                   }}
                 >
-                 < DashboardIcon sx={{color:'white'}}/>
-                </ListItemIcon>
-                <ListItemText primary="Dashboard" sx={{ opacity: open ? 1 : 0 ,color:'white'}} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding className='sidebarelement' >
-              <ListItemButton component={Link} to={"/live-monitoring"} 
-                sx={{
-                  minHeight: 48,
-                  justifyContent:  open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr:  open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                  <LiveTvIcon sx={{color:'white'}}/>
+                  </ListItemIcon>
+                  <ListItemText primary="Live-Monitoring" sx={{ opacity: open ? 1 : 0,color:'white' }} onClick={() => {shoot1()}} />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding className='sidebarelement' onClick={() => shoot()}>
+                <ListItemButton component={Link} to={"/analytics"}
                   sx={{
-                    minWidth: 0,
-                    mr:  open ? 3 : 'auto',
-                    justifyContent: 'center',
+                    minHeight: 48,
+                    justifyContent:  open ? 'initial' : 'center',
+                    px: 2.5,
                   }}
                 >
-                 <LiveTvIcon sx={{color:'white'}}/>
-                </ListItemIcon>
-                <ListItemText primary="Live-Monitoring" sx={{ opacity: open ? 1 : 0,color:'white' }} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding className='sidebarelement'>
-              <ListItemButton component={Link} to={"/analytics"}
-                sx={{
-                  minHeight: 48,
-                  justifyContent:  open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr:  open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                  <BarChartIcon sx={{color:'white'}} />
+                  </ListItemIcon>
+                  <ListItemText primary="Analytics" sx={{ opacity: open ? 1 : 0,color:'white' }} onClick={() => shoot()}/>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding className='sidebarelement' onClick={() => shoot()}>
+                <ListItemButton component={Link} to={"/reports"}
                   sx={{
-                    minWidth: 0,
-                    mr:  open ? 3 : 'auto',
-                    justifyContent: 'center',
+                    minHeight: 48,
+                    justifyContent:  open ? 'initial' : 'center',
+                    px: 2.5,
                   }}
                 >
-                 <BarChartIcon sx={{color:'white'}} />
-                </ListItemIcon>
-                <ListItemText primary="Analytics" sx={{ opacity: open ? 1 : 0,color:'white' }} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding className='sidebarelement' >
-              <ListItemButton component={Link} to={"/reports"}
-                sx={{
-                  minHeight: 48,
-                  justifyContent:  open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr:  open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                  
+                  <AssessmentIcon sx={{color:'white'}}/>
+                  </ListItemIcon>
+                  <ListItemText primary="Reports" sx={{ opacity: open ? 1 : 0 ,color:'white'}}  onClick={() => shoot()}/>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding  className='sidebarelement' onClick={() => shoot()}>
+                <ListItemButton component={Link} to={"/features"}
                   sx={{
-                    minWidth: 0,
-                    mr:  open ? 3 : 'auto',
-                    justifyContent: 'center',
+                    minHeight: 48,
+                    justifyContent:  open ? 'initial' : 'center',
+                    px: 2.5,
                   }}
                 >
-                 
-                 <AssessmentIcon sx={{color:'white'}}/>
-                </ListItemIcon>
-                <ListItemText primary="Reports" sx={{ opacity: open ? 1 : 0 ,color:'white'}} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding  className='sidebarelement'>
-              <ListItemButton component={Link} to={"/features"}
-                sx={{
-                  minHeight: 48,
-                  justifyContent:  open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr:  open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                  
+                  <FeaturedPlayListIcon sx={{color:'white'}}/>
+                  </ListItemIcon>
+                  <ListItemText primary="Features" sx={{ opacity: open ? 1 : 0,color:'white' }} onClick={() => shoot1()}/>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding className='sidebarelement'>
+                <ListItemButton component={Link} to={"/vms-settings"}
                   sx={{
-                    minWidth: 0,
-                    mr:  open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
+                    minHeight: 48,
+                    justifyContent:  open ? 'initial' : 'center',
+                    px: 2.5,
+                  }} 
                 >
-                 
-                 <FeaturedPlayListIcon sx={{color:'white'}}/>
-                </ListItemIcon>
-                <ListItemText primary="Features" sx={{ opacity: open ? 1 : 0,color:'white' }} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding className='sidebarelement'>
-              <ListItemButton component={Link} to={"/vms-settings"}
-                sx={{
-                  minHeight: 48,
-                  justifyContent:  open ? 'initial' : 'center',
-                  px: 2.5,
-                }} 
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr:  open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                 <SettingsApplicationsIcon sx={{color:'white'}}/>
-                </ListItemIcon>
-                <ListItemText primary="VMS Settings" sx={{ opacity: open ? 1 : 0 ,color:'white'}} />
-              </ListItemButton>
-            </ListItem>
-        </List>
-      </Drawer>
-      
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        {children}
-        {/* <Routes>
-        <Route  path="/" element={<Dashboard  onTitleChange= {handleTitleChange}/>} />
-        <Route path="/live-monitoring" element={<LiveMonitoring onTitleChange= {handleTitleChange}/>}   />
-        <Route path="/analytics" element={<Analytics onTitleChange= {handleTitleChange} />}  />
-        <Route path="/reports" element={<Reports onTitleChange= {handleTitleChange} />}  />
-        <Route path="/features" element={<Features  onTitleChange= {handleTitleChange}/>}  />
-        <Route path="/vms-settings" element={<VMS  onTitleChange= {handleTitleChange}/>}  />
-
-        </Routes> */}
-        <Outlet />
-      </Box>
-      
-    </Box>
-    </ThemeProvider>
-    </ModeContext.Provider>: <p>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr:  open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                  <SettingsApplicationsIcon sx={{color:'white'}}/>
+                  </ListItemIcon>
+                  <ListItemText primary="VMS Settings" sx={{ opacity: open ? 1 : 0 ,color:'white'}} />
+                </ListItemButton>
+              </ListItem>
+          </List>
+        </Drawer>
         
-      </p>}</>
-  );
-}
+        <Box component="main" sx={{ flexGrow: 1, p: 2}}>
+          <DrawerHeader />
+          {children}
+          {/* <Routes>
+          <Route  path="/" element={<Dashboard  onTitleChange= {handleTitleChange}/>} />
+          <Route path="/live-monitoring" element={<LiveMonitoring onTitleChange= {handleTitleChange}/>}   />
+          <Route path="/analytics" element={<Analytics onTitleChange= {handleTitleChange} />}  />
+          <Route path="/reports" element={<Reports onTitleChange= {handleTitleChange} />}  />
+          <Route path="/features" element={<Features  onTitleChange= {handleTitleChange}/>}  />
+          <Route path="/vms-settings" element={<VMS  onTitleChange= {handleTitleChange}/>}  />
+
+          </Routes> */}
+          <Outlet />
+        </Box>
+        
+      </Box>
+      </ThemeProvider>
+      </ModeContext.Provider>: <p>
+          
+        </p>}</>
+    );
+  }

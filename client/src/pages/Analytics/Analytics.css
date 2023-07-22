@@ -1,0 +1,120 @@
+.outcon{
+    display: flex;
+    flex-direction: column;
+    margin-right:3%;
+    width: calc(97vw - 3%);
+}
+@media screen and (max-width:767px) {
+  .outcon{
+    margin-right:8%;
+    width: calc(92vw - 8%);
+}
+}
+@media screen and (min-width:768px) and (max-width:992px) {
+  .outcon{
+    margin-right:7%;
+    width: calc(93vw - 7%);
+}
+}
+@media screen and (min-width:993px) and (max-width:1200px) {
+  .outcon{
+    margin-right:4.5%;
+    width: calc(95.5vw - 4.5%);
+}
+}
+@media screen and (min-width:1200px) and (max-width:1400px) {
+  .outcon{
+    margin-right:4%;
+    width: calc(96vw - 4%);
+}
+}
+.con{
+    gap: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+.datepicker1{
+  border: 1px solid black;
+  border-radius: 6px;
+  padding: 2px;
+  margin-top: 5px;
+}
+.line3{
+  gap: 30px !important;
+}
+.con1{
+    margin-bottom: 20px;
+}
+.menu{
+    display: flex;
+    flex-direction: row;
+    /* justify-content: flex-end; Added this line */
+}
+.chart1,
+.chart2{
+  height: 530px;
+  width: 50%;
+}
+.chart3,
+.chart4,
+.chart5{
+  height: 430px;
+  width: 100%;
+}
+.chart{
+    /* flex: 1;
+    min-width: 0; */
+    border-radius: 10px;
+     box-shadow: 0 5px 5px rgba(0,0,0,0.3) !important;
+     overflow-x: auto;
+     overflow-y: hidden;
+  }
+.name{
+    margin-left: 20px;
+}
+.line{
+    margin-left: auto;
+    display: flex;
+    flex-direction: row;
+    margin-right: 2%;
+    gap: 20px;
+}
+@media screen and (min-width:992px) {
+    .con{
+        display: flex;
+        flex-direction: row;
+    }
+    .d{
+      padding-top: 1%;
+    }
+}
+@media screen and (max-width:992px) {
+    .con{
+        display: flex;
+        flex-direction: column;
+    }
+    .chart{
+        width: 100%;
+        /* flex: initial; */
+    }
+}
+.custom-switch {
+    .MuiSwitch-switchBase {
+      color: #BEBEBE;
+      &.Mui-checked {
+        color: #51C7EF;
+        + .MuiSwitch-track {
+          opacity: 1;
+          background-color: #003470;
+        }
+      }
+    }
+    .MuiSwitch-thumb {
+      box-shadow: none;
+    }
+    .MuiSwitch-track {
+      border-radius: 24px;
+      opacity: 1;
+      background-color: #003470;
+    }
+  }

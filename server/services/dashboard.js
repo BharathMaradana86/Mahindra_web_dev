@@ -8,10 +8,10 @@ const { resolve } = require('path');
 const { rejects } = require('assert');
 
 exports.getData = async (req,res) => {
-     try {
+     try {  
            const result = await SelectedData();
             console.log(result);
-           res.status(200).json(result);
+           res.status(200).json(result);  
      } catch (error) {
         res.status(404).json(error)
      }
@@ -28,9 +28,9 @@ exports.getData_2 = async (req,res) => {
           let r = parseInt(to_year);
           r=r+1;
           let j=parseInt(from_year)
-          for(let i=j;i<=(r);i++){
+          for(let i=j;i<(r);i++){
               
-                    data_set.push(JSON.parse(`{"id": ${i},"helmet_count": ${k},"vest_count": ${k},"shoes_count": ${k},"gloves_count": ${k}, "goggles_count": ${k}}`))
+                    data_set.push(JSON.parse(`{"id": ${i},"total_helmet_count": ${k},"total_vest_count": ${k},"total_shoes_count": ${k},"total_gloves_count": ${k}, "total_goggles_count": ${k}}`))
           }
          
          const result = await SelectedData_2(from_year,to_year,Line);
@@ -50,9 +50,9 @@ exports.getData_3 = async (req,res) => {
              const {year ,from_month ,year_1, to_month,Line} = req.body;
             
             const result = await SelectedData_3(year,from_month,year_1,to_month,Line);
-          
+           
             let data_set = await generate_months(year,from_month,year_1,to_month);
-            console.log(data_set)
+           console.log(data_set)
             const finale_result = await Convert_data_1(data_set,result);
           
             res.status(200).json(finale_result);
@@ -62,20 +62,22 @@ exports.getData_3 = async (req,res) => {
 }
 
 exports.getData_4 = async (req,res) => {
-    try {
-                    const {from_date,to_date} = req.body;
+    try {           
+                       
+                    const {from_date,to_date,Line} = req.body;
                    
-                    let date_from = from_date.split('-');
-                    date_from.reverse();
-                    let main_date_from = date_from.join("-");
-                    let date_to = to_date.split('-');
-                    date_to.reverse();
-                    let main_date_to = date_to.join("-");
-                   JSON.stringify(main_date_from);
-                   JSON.stringify(main_date_to);
-                    const result = await SelectedData_6(main_date_from,main_date_to);
+                  //   let date_from = from_date.split('-');
+                  //   date_from.reverse();
+                  //   let main_date_from = date_from.join("-");
+                  //   let date_to = to_date.split('-');
+                  //   date_to.reverse();
+                  //   let main_date_to = date_to.join("-");
+                  //  JSON.stringify(main_date_from);
+                  //  JSON.stringify(main_date_to);
+                  console.log(from_date,to_date,Line)
+                    const result = await SelectedData_6(from_date,to_date);
                     console.log(result)
-                    let data_set = await generate_dates(main_date_from,main_date_to);
+                    let data_set = await generate_dates(from_date,to_date);
                     console.log(data_set)
                     const finale_result = await Convert_data_2(data_set,result);
                     res.status(200).json(finale_result);
@@ -148,24 +150,15 @@ const Convert_data = (data_set,result) => {
 const SelectedData_2 = (from_year, to_year,Line) => {
   return new Promise((resolve, reject) => {
    
-    let query = `SELECT
-        SUBSTR(date, 7) AS id,
-        SUM(CASE WHEN json_extract(json_data, '$.helmet') = false THEN 1 ELSE 0 END) AS helmet_count,
-        SUM(CASE WHEN json_extract(json_data, '$.vest') = false THEN 1 ELSE 0 END) AS vest_count,
-        SUM(CASE WHEN json_extract(json_data, '$.shoes') = false THEN 1 ELSE 0 END) AS shoes_count,
-        SUM(CASE WHEN json_extract(json_data, '$.gloves') = false THEN 1 ELSE 0 END) AS gloves_count,
-        SUM(CASE WHEN json_extract(json_data, '$.goggles') = false THEN 1 ELSE 0 END) AS goggles_count
-      FROM dummy_table
-      WHERE (SUBSTR(date, 7) between ? and ?) and (zone = ?)
-      GROUP BY id`;
-      db_1.all(query,[from_year,to_year,Line],(err,result) => {
+      mysql.query(`select year as id,sum(helmet_count) as total_helmet_count,sum(vest_count) as total_vest_count,sum(goggles_count) as total_goggles_count,sum(gloves_count) as total_gloves_count,sum(shoes_count) as total_shoes_count from yearlyreport where year BETWEEN ${from_year} AND ${to_year} group by year;`,(err,result) => {
         if(err){
           console.log(err);
           return reject(err);
         }
-       
-        return resolve(result);
-})
+       const results = Object.values(JSON.parse(JSON.stringify(result)));
+         console.log(results);
+        return resolve(results);
+})  
   });
 };
 const SelectedData = () => {
@@ -173,33 +166,49 @@ const SelectedData = () => {
     return new Promise((resolve,reject) => {
         const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
     
-        let query = `SELECT
-        sum(CASE WHEN json_extract(json_data , '$.helmet') = false THEN 1 ELSE 0 END) AS helmet_count,
-        sum(CASE WHEN json_extract(json_data, '$.vest') = false THEN 1 ELSE 0 END) AS vest_count,
-        sum(CASE WHEN json_extract(json_data, '$.shoes') = false THEN 1 ELSE 0 END) AS shoes_count,
-        sum(CASE WHEN json_extract(json_data, '$.gloves') = false THEN 1 ELSE 0 END) AS gloves_count,
-        sum(CASE WHEN json_extract(json_data, '$.goggles') = false THEN 1 ELSE 0 END) AS goggles_count
+      //   let query = `SELECT
+      //   sum(CASE WHEN json_extract(json_data , '$.helmet') = false THEN 1 ELSE 0 END) AS helmet_count,
+      //   sum(CASE WHEN json_extract(json_data, '$.vest') = false THEN 1 ELSE 0 END) AS vest_count,
+      //   sum(CASE WHEN json_extract(json_data, '$.shoes') = false THEN 1 ELSE 0 END) AS shoes_count,
+      //   sum(CASE WHEN json_extract(json_data, '$.gloves') = false THEN 1 ELSE 0 END) AS gloves_count,
+      //   sum(CASE WHEN json_extract(json_data, '$.goggles') = false THEN 1 ELSE 0 END) AS goggles_count
     
-      FROM dummy_table where date=?`;
+      // FROM dummy_table where date=?`;
       
-        db_1.all(query,['19-06-2023'],(error,elements) => {
+        mysql.query(`select day_month_year as id,sum(helmet_count) as total_helmet_count,sum(vest_count) as total_vest_count,sum(goggles_count) as total_goggles_count,sum(gloves_count) as total_gloves_count,sum(shoes_count) as total_shoes_count from dailyreport where (day_month_year= ${currentDate}) group by day_month_year;`,(error,elements) => {
           if(error){
             console.log(error)
             return reject(error);
         }
-        console.log(elements)
-        let total_count = elements[0].helmet_count+elements[0].vest_count+elements[0].shoes_count+elements[0].goggles_count+elements[0].gloves_count;
-        const data_set = [
-          {Object: 'Total PPE Incidents' , Count :total_count}, 
-          {Object: 'Helmet Non Adherence', Count:elements[0].helmet_count},
-          {Object: 'Apron Non-Adherence', Count:elements[0].vest_count},
-          {Object: 'Hand gloves Non Adherence' , Count:elements[0].gloves_count},
-          {Object: 'Goggle Non Adherence' , Count:elements[0].goggles_count},
-          {Object: 'Shoes Non Adherence' , Count:elements[0].shoes_count},
-          {Object: 'Mobile Detection' , Count:5},
-          {Object: 'Person at Robotic Cell' , Count:5}
-        ]
-        return resolve(data_set);
+       
+        let result=Object.values(JSON.parse(JSON.stringify(elements)));
+  
+               let total_count =0
+              let data_set = [
+                {Object: 'Total PPE Incidents' , Count :0}, 
+                {Object: 'Helmet Non Adherence', Count:0},
+                {Object: 'Apron Non-Adherence', Count:0},
+                {Object: 'Hand gloves Non Adherence' , Count:0},
+                {Object: 'Goggle Non Adherence' , Count:0},
+                {Object: 'Shoes Non Adherence' , Count:0},
+                {Object: 'Mobile Detection' , Count:5},
+                {Object: 'Person at Robotic Cell' , Count:5}
+               ]
+             if(result[0]) { 
+          console.log(result[0])
+          total_count = result[0].total_helmet_count+result[0].total_vest_count+result[0].total_shoes_count+result[0].total_goggles_count+result[0].total_gloves_count;
+              data_set = [
+                  {Object: 'Total PPE Incidents' , Count :total_count}, 
+                  {Object: 'Helmet Non Adherence', Count:result[0].total_helmet_count},
+                  {Object: 'Apron Non-Adherence', Count:result[0].total_vest_count},
+                  {Object: 'Hand gloves Non Adherence' , Count:result[0].total_gloves_count},
+                  {Object: 'Goggle Non Adherence' , Count:result[0].total_goggles_count},
+                  {Object: 'Shoes Non Adherence' , Count:result[0].total_shoes_count},
+                  {Object: 'Mobile Detection' , Count:5},
+                  {Object: 'Person at Robotic Cell' , Count:5}
+                ]
+              }
+                return resolve(data_set);
 
         })
        
@@ -250,20 +259,20 @@ const SelectedData_3 = async (year,from_month,year_1,to_month,Line) => {
       
      
    return new Promise((resolve,reject) => {
-    let query = `SELECT
-    SUBSTRING(date, 4, 2) || '-' || SUBSTRING(date, 7, 4) AS id,
-    SUM(CASE WHEN json_extract(json_data, '$.helmet') = false  THEN 1 ELSE 0 END) AS helmet_count,
-    SUM(CASE WHEN json_extract(json_data, '$.vest') = false THEN 1 ELSE 0 END) AS vest_count,
-    SUM(CASE WHEN json_extract(json_data, '$.shoes') = false THEN 1 ELSE 0 END) AS shoes_count,
-    SUM(CASE WHEN json_extract(json_data, '$.gloves') = false THEN 1 ELSE 0 END) AS gloves_count,
-     SUM(CASE WHEN json_extract(json_data, '$.goggles') = false THEN 1 ELSE 0 END) AS goggles_count
-  FROM dummy_table
-  WHERE
-   ( SUBSTRING(date, 7, 4) BETWEEN ? AND ? AND
-    (SUBSTRING(date, 4, 2) >= ? OR SUBSTRING(date, 7, 4) > ?) AND
-    (SUBSTRING(date, 4, 2) <= ? OR SUBSTRING(date, 7, 4) < ?) ) AND
-    zone = ?
-  GROUP BY id ORDER BY SUBSTRING(date, 7, 4), SUBSTRING(date, 4, 2)`
+  //   let query = `SELECT
+  //   SUBSTRING(date, 4, 2) || '-' || SUBSTRING(date, 7, 4) AS id,
+  //   SUM(CASE WHEN json_extract(json_data, '$.helmet') = false  THEN 1 ELSE 0 END) AS helmet_count,
+  //   SUM(CASE WHEN json_extract(json_data, '$.vest') = false THEN 1 ELSE 0 END) AS vest_count,
+  //   SUM(CASE WHEN json_extract(json_data, '$.shoes') = false THEN 1 ELSE 0 END) AS shoes_count,
+  //   SUM(CASE WHEN json_extract(json_data, '$.gloves') = false THEN 1 ELSE 0 END) AS gloves_count,
+  //    SUM(CASE WHEN json_extract(json_data, '$.goggles') = false THEN 1 ELSE 0 END) AS goggles_count
+  // FROM dummy_table
+  // WHERE
+  //  ( SUBSTRING(date, 7, 4) BETWEEN ? AND ? AND
+  //   (SUBSTRING(date, 4, 2) >= ? OR SUBSTRING(date, 7, 4) > ?) AND
+  //   (SUBSTRING(date, 4, 2) <= ? OR SUBSTRING(date, 7, 4) < ?) ) AND
+  //   zone = ?
+  // GROUP BY id ORDER BY SUBSTRING(date, 7, 4), SUBSTRING(date, 4, 2)`
 
   // db_1.all(query,[year,year_1,from_month,year,to_month,year_1],(err,elements) => {
   //     if(err) {
@@ -272,17 +281,21 @@ const SelectedData_3 = async (year,from_month,year_1,to_month,Line) => {
   //     }
   //     return resolve(elements);
   // })
-
-          pool.acquire().then((db) => {
-             db.all(query,[year,year_1,from_month,year,to_month,year_1,Line],(err,elements) => {
-      if(err) {
-        console.log(err)
-      return reject(err);
-      }
-     
-      return resolve(elements);
-  })
-          })
+ 
+           mysql.query(`SELECT month_year as id,SUM(helmet_count) AS total_helmet_count,SUM(vest_count) AS total_vest_count,SUM(goggles_count) AS total_goggles_count,SUM(gloves_count) AS total_gloves_count,SUM(shoes_count) AS total_shoes_count FROM monthlyreport WHERE
+(SUBSTRING_INDEX(month_year, '-', 1) = ${year} AND SUBSTRING_INDEX(month_year, '-', -1) >= ${from_month})
+OR (SUBSTRING_INDEX(month_year, '-', 1) = ${year_1} AND SUBSTRING_INDEX(month_year, '-', -1) <= ${to_month})
+OR (SUBSTRING_INDEX(month_year, '-', 1) > ${year} AND SUBSTRING_INDEX(month_year, '-', 1) < ${year_1})
+GROUP BY
+month_year ORDER BY STR_TO_DATE(month_year, '%Y-%m');`,(err,result) => {
+            if(err){
+              console.log(err)
+              return reject(err);
+            }
+            const results = Object.values(JSON.parse(JSON.stringify(result)));
+            console.log(results);
+            return resolve(results);
+           })
 
    })   
 
@@ -290,24 +303,16 @@ const SelectedData_3 = async (year,from_month,year_1,to_month,Line) => {
 
 const SelectedData_6 = (from_date,to_date) => {
     return new Promise((resolve,reject) => {
-           let query = `select 
-           date AS id,
-           SUM(CASE WHEN json_extract(json_data, '$.helmet') = false  THEN 1 ELSE 0 END) AS helmet_count,
-           SUM(CASE WHEN json_extract(json_data, '$.vest') = false THEN 1 ELSE 0 END) AS vest_count,
-           SUM(CASE WHEN json_extract(json_data, '$.shoes') = false THEN 1 ELSE 0 END) AS shoes_count,
-           SUM(CASE WHEN json_extract(json_data, '$.gloves') = false THEN 1 ELSE 0 END) AS gloves_count,
-           SUM(CASE WHEN json_extract(json_data, '$.goggles') = false THEN 1 ELSE 0 END) AS goggles_count
-           FROM dummy_table
-           WHERE id >= '19-06-2023' AND id <= '23-06-2023'
-           GROUP BY id`
-           db_1.all(query,(err,result) => {
-                      if(err){
-                        console.log(err);
-                        return reject(err);
-                      }
-                    
-                      return resolve(result);
-           })
+           
+          mysql.query(`select day_month_year as id,sum(helmet_count) as total_helmet_count,sum(vest_count) as total_vest_count,sum(gloves_count) as total_gloves_count,sum(goggles_count) as total_goggles_count,sum(shoes_count) as total_shoes_count from dailyreport where (day_month_year BETWEEN '${from_date}' and '${to_date}') group by day_month_year;`,(err,result) => {
+              if(err) {
+                console.log(err)
+                return reject(result);
+              }
+              console.log(result)
+              const results = Object.values(JSON.parse(JSON.stringify(result)))
+              return resolve(results);
+        })
     })
 }
 
@@ -318,14 +323,15 @@ const generate_dates = (from_date,to_date) => {
   const endDate = new Date(to_date); 
   console.log(currentDate,endDate)
   while (currentDate <= endDate) {
-    const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getFullYear()}`;
+   const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+    
     const dateObject = {
       id: formattedDate,
-      helmet_count: 0,
-      vest_count: 0,
-      shoes_count: 0,
-      goggles_count: 0,
-      gloves_count: 0
+      total_helmet_count: 0,
+      total_vest_count: 0,
+      total_shoes_count: 0,
+      total_goggles_count: 0,
+      total_gloves_count: 0
     };
     dateRange.push(dateObject);
     currentDate.setDate(currentDate.getDate() + 1);
@@ -454,31 +460,43 @@ const result = new Date('2022', '2', '28').toLocaleString('en-GB', {
 
 
 const getMonthsInRange = (startMonth, startYear, endMonth, endYear) => {
-  const startYearIndex = startYear;
-  const endYearIndex = endYear;
-
-  if (startYearIndex > endYearIndex) {
-    return [];
-  }
-
-  const result = [];
-  for (let year = startYearIndex; year <= endYearIndex; year++) {
-    const start = (year === startYearIndex) ? startMonth : 1;
-    const end = (year === endYearIndex) ? endMonth : 12;
-
-    if (start < 1 || start > 12 || end < 1 || end > 12) {
-      continue;
-    }
-    let helmet_count=0,vest_count=0,gloves_count=0,goggles_count=0,shoes_count=0;
-    for (let month = start; month <= end; month++) {
-      const formattedMonth = month.toString().padStart(2, '0');
-      const id = `${formattedMonth}-${year}`;
-      result.push({ id, helmet_count, vest_count,shoes_count, gloves_count, goggles_count });
-    }
-  }
-
-  return result;
-};
+    const startYearIndex = startYear;
+    const endYearIndex = endYear;
+   
+    if(startMonth == '00'){
+      startMonth = '1';
+      console.log(startMonth,startYear,endMonth,endYear)
+    }
+    if (startYearIndex > endYearIndex) {
+      return [];
+    }
+  
+    const result = [];
+    for (let year = startYearIndex; year <= endYearIndex; year++) {
+      const start = (year == startYearIndex) ? startMonth : 1;
+      const end = (year == endYearIndex) ? endMonth : 12;
+  
+      if (start < 1 || start > 12 || end < 1 || end > 12) {
+        continue;
+      }
+  
+      for (let month = start; month <= Math.min(end, 12); month++) {
+        const formattedMonth = month.toString().padStart(2, '0');
+        const id = `${year}-${formattedMonth}`;
+  
+        result.push({
+          id,
+          total_helmet_count: 0,
+          total_vest_count: 0,
+          helmet_gloves_count: 0,
+          total_goggles_count: 0,
+          total_shoes_count: 0
+        });
+      }
+    }
+  
+    return result;
+  };
 
 
 
@@ -494,4 +512,18 @@ const generate_months =async (year,from_month,year_1,to_month) => {
 const monthsInRange = await getMonthsInRange(from_month, year, to_month, year_1);
 return monthsInRange;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
